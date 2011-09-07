@@ -1,0 +1,50 @@
+= acts_as_revisioned v0.1a
+
+acts_as_revisioned is a change auditing system for ruby_on_rail applications. 
+It uses a NoSQL Key-Value store to create records of changes.
+It generates copies of records after changes in NoSQL with matching :id keys,
+but has additional keys to support versioning.
+
+== Example
+
+item.rb
+  class Item << ActiveRecord:Base
+    acts_as_revisioned :except => [:created_at,:updated_at]
+  end
+
+irb:
+  item = Item.create!({:name => "Test Item"})
+  item.id # 1
+  item.revisions # [{:version => 1, :name => "Test Item"}]
+  item.name = "an_extremely_unlikely_name"
+  item.save
+  item.revisions # [{:version => 2, :name => "an_extremely_unlikely_name"}, {:version => 1, :name => "Test Item"}]
+
+== Requirements
+
+  ruby >= 1.9.2
+  rails >= 3.x
+  MongoDB
+
+== Installation
+
+1) Put it in your Gemfile and run `bundle install`
+   OR `gem install acts_as_revisioned`
+
+2) rails generate acts_as_revisioned:install
+
+== Usage
+
+In your ActiveRecord model, set acts_as_revisioned:
+
+  class Item < ActiveRecord:Base
+    acts_as_revisioned :except => [:created_at, :udpated_at]
+  end
+
+== IMPORTANT NOTES
+
+This is not a guarantee for logging changes and revision control.
+Actual revision control can be created, but it's up to you to create the logic.
+Since it is located in a separate NoSQL database, there is no guarantee
+for data consistency. This is just useful gem to search because
+other revision gems can't search the actual changes.
